@@ -1,0 +1,21 @@
+{
+  "id": "2026-11",
+  "vol": 1,
+  "label": "2026.11",
+  "theme": "悦己",
+  "ticker": {
+    "text": "샤오홍슈, 연간 구매의도 검색 14억 건 — 중국 소비자는 '사기 전에 검색'한다",
+    "post": "xhs-search"
+  },
+  "cover": "yueji",
+  "heroSide": ["xhs-search", "douyin-shift"],
+  "trending": ["rational-consumption", "local-beauty", "xhs-search"],
+  "featureCase": "kfashion-wanghong",
+  "cases": ["cu-xiaohongshu", "inbound-mz"],
+  "numbers": [
+    { "value": "90%+", "text": "감정적 소비의 가치를 인정하는 중국 젊은 소비자 비율. 실제 지불 의향은 약 60%.", "source": "중국중앙인민라디오(VML 인용)" },
+    { "value": "2.3조 위안", "text": "2024년 중국 '정서 경제' 시장 규모.", "source": "iiMedia Research" },
+    { "value": "33.9%", "text": "'소비를 늘리겠다'는 응답. 2023년 56.3%에서 3년 연속 하락.", "source": "DT상업관찰(이코노미스트 인용)" },
+    { "value": "+8%p", "text": "지난 1년간 새 브랜드를 시도한 Z세대 비중 증가폭(2021년 대비). 절반 이상이 새 브랜드를 탐색.", "source": "Accenture, 2026.05" }
+  ]
+}

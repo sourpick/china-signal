@@ -1,0 +1,86 @@
+{
+  "name": "中 SIGNAL",
+  "tagline": "CHINA MARKETING MONTHLY",
+  "description": "중국 소비 트렌드와 한국 브랜드의 중국 마케팅을 매달 기록하는 아카이브입니다.",
+  "author": "sourpick",
+  "role": "브랜드 마케터",
+  "bio": "한국 브랜드의 중국 마케팅을 관찰하고 기록합니다. 블로그와 브런치에서도 글을 씁니다.",
+  "email": "sourpick11@gmail.com",
+  "newsletterUrl": "",
+  "links": [
+    {
+      "name": "브런치",
+      "url": "https://brunch.co.kr/@dawnlightyoung"
+    },
+    {
+      "name": "블로그",
+      "url": "https://blog.naver.com/sour-pick"
+    }
+  ],
+  "categories": [
+    {
+      "id": "trend",
+      "name": "소비 트렌드",
+      "han": "潮",
+      "color": "#F5E6C4"
+    },
+    {
+      "id": "beauty",
+      "name": "뷰티",
+      "han": "美",
+      "color": "#F6D9DC"
+    },
+    {
+      "id": "fashion",
+      "name": "패션",
+      "han": "衣",
+      "color": "#DCE3F2"
+    },
+    {
+      "id": "fnb",
+      "name": "F&B",
+      "han": "食",
+      "color": "#FBE3CF"
+    },
+    {
+      "id": "retail",
+      "name": "리테일",
+      "han": "店",
+      "color": "#DDEBDD"
+    },
+    {
+      "id": "platform",
+      "name": "플랫폼",
+      "han": "台",
+      "color": "#E6E0F0"
+    },
+    {
+      "id": "inbound",
+      "name": "인바운드",
+      "han": "旅",
+      "color": "#D9ECEE"
+    }
+  ],
+  "platforms": [
+    {
+      "name": "샤오홍슈",
+      "han": "小红书"
+    },
+    {
+      "name": "더우인",
+      "han": "抖音"
+    },
+    {
+      "name": "티몰",
+      "han": "天猫"
+    },
+    {
+      "name": "위챗",
+      "han": "微信"
+    },
+    {
+      "name": "웨이보",
+      "han": "微博"
+    }
+  ]
+}

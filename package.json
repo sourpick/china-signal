@@ -1,0 +1,11 @@
+{
+  "name": "china-signal",
+  "version": "1.0.0",
+  "private": true,
+  "description": "中 SIGNAL — 중국 마케팅 트렌드 월간 아카이브",
+  "scripts": {
+    "build": "node build.js",
+    "start": "node build.js && node serve.js"
+  },
+  "engines": { "node": ">=18" }
+}
