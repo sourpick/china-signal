@@ -482,7 +482,7 @@ function archive() {
   const body = `<main class="wrap">
   <section class="page-title">
     <h1>ARCHIVE</h1>
-    <p>지금까지 발행한 리포트, 트렌드, K-브랜드 케이스를 모두 모았습니다. 카테고리를 눌러 골라 보세요.</p>
+    <p>중국 소비 트렌드와 시장 인사이트, 한국 브랜드의 마케팅 사례를 기록합니다.<br>관심 있는 카테고리에서 확인해 보세요.</br></p>
   </section>
   ${chips(root, { asButtons: true })}
   ${groups}
