@@ -164,6 +164,21 @@ const nextMonth = (id) => {
   return `${y}.${String(m).padStart(2, '0')}`;
 };
 
+// ---------- 심볼: 말하는 中 ----------
+// 가로로 누운 둥근 네모(口) + 말꼬리 = 말풍선, 세로획(丨)이 관통하면 中.
+// color: 심볼 색, knock: 말풍선 안쪽 세로획 색(보통 배경색)
+let symbolId = 0;
+function symbol({ color = '#C8102E', knock = '#F3F2EF', label = '', cls = '' } = {}) {
+  const id = 'sym' + (++symbolId);
+  const a11y = label ? `role="img" aria-label="${esc(label)}"` : 'aria-hidden="true"';
+  return `<svg class="symbol ${cls}" viewBox="0 0 200 180" ${a11y}><defs><clipPath id="${id}"><rect x="28" y="58" width="144" height="64" rx="30"/></clipPath></defs>` +
+    `<rect x="28" y="58" width="144" height="64" rx="30" fill="${color}"/>` +
+    `<polygon points="46,112 34,150 76,120" fill="${color}"/>` +
+    `<rect x="92" y="14" width="16" height="152" rx="8" fill="${color}"/>` +
+    `<rect x="92" y="14" width="16" height="152" fill="${knock}" clip-path="url(#${id})"/></svg>`;
+}
+const LOGO_MARK = () => `<span class="logo__mark">${symbol({ color: '#FFF4E6', knock: '#C8102E' })}</span>`;
+
 // ---------- 공통 조각 ----------
 const ICON_ARROW = '<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
 const ICON_SEARCH = '<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>';
@@ -193,6 +208,7 @@ function layout({ title, description, root, active, body }) {
 ${site.googleVerification ? `<meta name="google-site-verification" content="${esc(site.googleVerification)}">\n` : ''}${site.naverVerification ? `<meta name="naver-site-verification" content="${esc(site.naverVerification)}">\n` : ''}<link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;800;900&family=Noto+Sans+KR:wght@400;500;700;900&family=Noto+Serif+KR:wght@400;600;700;900&family=Noto+Serif+SC:wght@700;900&display=swap">
+<link rel="icon" href="${root}favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="${root}assets/style.css">
 </head>
 <body>
@@ -202,12 +218,13 @@ ${site.googleVerification ? `<meta name="google-site-verification" content="${es
   <span class="ticker__vol">VOL.${String(issue.vol).padStart(2, '0')} · ${esc(issue.label)}</span>
 </div></div>
 <header class="site-header"><div class="wrap">
-  <a class="logo" href="${root}index.html"><span class="logo__mark">中</span>SIGNAL</a>
+  <a class="logo" href="${root}index.html" aria-label="中SIGNAL 홈">${LOGO_MARK()}SIGNAL</a>
   <nav class="nav" aria-label="주요 메뉴">
     <a href="${postUrl(pick(issue.cover), root)}"${active === 'report' ? ' aria-current="page"' : ''}>월간 리포트</a>
     <a href="${root}archive.html#trend">트렌드</a>
     <a href="${root}index.html#case">K-브랜드 케이스</a>
     <a href="${root}archive.html"${active === 'archive' ? ' aria-current="page"' : ''}>아카이브</a>
+    <a href="${root}brand.html"${active === 'brand' ? ' aria-current="page"' : ''}>브랜드 스토리</a>
     <a href="${root}about.html"${active === 'about' ? ' aria-current="page"' : ''}>About</a>
   </nav>
   <div class="header-actions">
@@ -224,10 +241,11 @@ ${site.googleVerification ? `<meta name="google-site-verification" content="${es
 ${body}
 <footer class="site-footer"><div class="wrap" id="about">
   <div class="about">
-    <a class="logo" href="${root}index.html"><span class="logo__mark">中</span>SIGNAL</a>
+    <a class="logo" href="${root}index.html" aria-label="中SIGNAL 홈">${LOGO_MARK()}SIGNAL</a>
     <p>${esc(site.author)} · ${esc(site.role)}. ${esc(site.bio)}</p>
   </div>
   <nav aria-label="연락처">
+    <a href="${root}brand.html">브랜드 스토리</a>
     <a href="${root}about.html">About</a>
     ${site.links.map((l) => `<a href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.name)}</a>`).join('\n    ')}
     <span>${esc(site.email)}</span>
@@ -307,7 +325,7 @@ function home() {
 
   const body = `<main class="wrap">
   <section class="masthead">
-    <h1><span class="han">中</span>SIGNAL</h1>
+    <h1>${symbol({ color: '#C8102E', knock: '#F3F2EF', label: '中', cls: 'masthead__symbol' })}SIGNAL</h1>
     <div class="masthead__intro">
       <p class="eyebrow">${esc(site.tagline)}</p>
       <p>${esc(site.description)}</p>
@@ -483,6 +501,91 @@ ${markdown(fs.readFileSync(P.about, 'utf8'))}
   write('about.html', layout({ title: 'About', root, active: 'about', body }));
 }
 
+// ---------- 브랜드 스토리 ----------
+function brand() {
+  const root = '';
+  const meanings = [
+    ['zhōng', '중국', '다루는 시장', '중국 소비자와 플랫폼에서 일어나는 변화를 매달 기록해요.'],
+    ['zhōng', '가운데', '서 있는 자리', '한국 본사와 중국 현지 사이, 그 한가운데에서 양쪽의 말을 잇는 사람이에요.'],
+    ['zhòng', '적중하다', '일하는 방식', '中奖(당첨)의 中처럼, 신호를 읽고 과녁을 정확히 맞혀요.'],
+  ];
+  const colors = [
+    ['Signal Red', '#C8102E', '중국 시장이 보내는 신호. 가장 먼저 눈에 띄어야 하는 정보에 써요.', '#FFFFFF'],
+    ['Ink', '#141414', '기록의 색. 본문과 데이터는 단단하고 차분하게.', '#FFFFFF'],
+    ['Paper', '#F3F2EF', '아카이브의 바탕. 오래 읽어도 편한 종이 같은 배경이에요.', '#141414'],
+    ['Cream', '#FFF4E6', '빨강 위에 올라가는 심볼과 글자의 색이에요.', '#141414'],
+  ];
+  const body = `<main class="wrap">
+  <section class="brand-hero">
+    <div class="brand-hero__mark">${symbol({ color: '#FFF4E6', knock: '#C8102E', label: '中SIGNAL 심볼, 말하는 中' })}</div>
+    <div class="brand-hero__text">
+      <p class="eyebrow">BRAND STORY</p>
+      <h1><span class="han">中</span>SIGNAL</h1>
+      <p class="brand-hero__tag">중국 시장의 신호를<br>한국 브랜드의 언어로.</p>
+      <p class="brand-hero__en">Read China, first.</p>
+    </div>
+  </section>
+
+  <section class="brand-sec">
+    <div class="brand-sec__head"><span class="num">01</span><h2>이름 · 中 한 글자에 담은 세 가지 뜻</h2></div>
+    <div class="meaning-grid">
+      ${meanings.map(([py, ko, role, text]) => `<article class="meaning">
+        <span class="meaning__han">中</span>
+        <p class="meaning__py">${py} · ${ko}</p>
+        <h3>${role}</h3>
+        <p>${text}</p>
+      </article>`).join('\n      ')}
+    </div>
+    <p class="brand-quote">여기에 SIGNAL을 붙이면 이렇게 읽혀요.<br><b>"중국 시장의 신호를, 한가운데에서 읽고, 정확히 맞힌다."</b></p>
+  </section>
+
+  <section class="brand-sec">
+    <div class="brand-sec__head"><span class="num">02</span><h2>심볼 · 말하는 中</h2></div>
+    <div class="formula" aria-label="말풍선과 세로획이 만나 中이 되는 과정">
+      <div class="formula__item"><svg viewBox="0 0 200 180" aria-hidden="true"><rect x="28" y="58" width="144" height="64" rx="30" fill="#141414"/><polygon points="46,112 34,150 76,120" fill="#141414"/></svg><span>말풍선 · 口</span><small>중국 소비자의 목소리</small></div>
+      <span class="formula__op">+</span>
+      <div class="formula__item"><svg viewBox="0 0 200 180" aria-hidden="true"><rect x="92" y="14" width="16" height="152" rx="8" fill="#141414"/></svg><span>세로획 · 丨</span><small>그 목소리를 꿰뚫는 신호</small></div>
+      <span class="formula__op">=</span>
+      <div class="formula__item formula__item--result">${symbol({ color: '#C8102E', knock: '#FFFFFF' })}<span>中</span><small>중국이 말을 걸어오는 순간</small></div>
+    </div>
+    <p class="brand-text">가로로 누운 둥근 네모에 말꼬리를 달아 말풍선을 만들고, 세로획이 그 말풍선을 위아래로 꿰뚫게 했어요. 그러면 中이 됩니다. 중국 시장이 하는 말을 가장 먼저 듣고, 그 안에서 신호를 찾아낸다는 뜻이에요. 한 가지 색으로도 완성되는 형태라 프로필, 도장, 스티커 어디에 써도 또렷해요.</p>
+  </section>
+
+  <section class="brand-sec">
+    <div class="brand-sec__head"><span class="num">03</span><h2>컬러</h2></div>
+    <div class="color-grid">
+      ${colors.map(([name, hex, text, fg]) => `<div class="color">
+        <div class="color__chip" style="background:${hex};color:${fg}"><b>${name}</b><span>${hex}</span></div>
+        <p>${text}</p>
+      </div>`).join('\n      ')}
+    </div>
+  </section>
+
+  <section class="brand-sec">
+    <div class="brand-sec__head"><span class="num">04</span><h2>로고 사용</h2></div>
+    <div class="usage-grid">
+      <div class="usage" style="background:#C8102E;color:#FFF4E6">${symbol({ color: '#FFF4E6', knock: '#C8102E' })}<span class="usage__word"><span class="han">中</span>SIGNAL</span><small>기본 · 빨강 바탕</small></div>
+      <div class="usage" style="background:#FFFFFF">${symbol({ color: '#C8102E', knock: '#FFFFFF' })}<span class="usage__word"><span class="han" style="color:#C8102E">中</span>SIGNAL</span><small>밝은 바탕</small></div>
+      <div class="usage" style="background:#141414;color:#F3F2EF">${symbol({ color: '#F3F2EF', knock: '#141414' })}<span class="usage__word"><span class="han" style="color:#FF5A6A">中</span>SIGNAL</span><small>어두운 바탕</small></div>
+    </div>
+  </section>
+
+  <section class="brand-sec brand-mission">
+    <div class="brand-sec__head"><span class="num">05</span><h2>왜 만들었나</h2></div>
+    <p>본사의 메시지가 중국 소비자에게 제대로 닿게, 중국 소비자의 목소리가 본사에 제대로 들리게.<br>그 사이에서 매달 신호를 읽고 기록하는 일, 그게 中SIGNAL이에요.</p>
+    <a class="btn" href="${root}archive.html">아카이브 보러 가기</a>
+  </section>
+</main>`;
+  write('brand.html', layout({ title: '브랜드 스토리', description: '中SIGNAL의 이름, 심볼, 컬러에 담긴 이야기', root, active: 'brand', body }));
+}
+
+// ---------- 파비콘 ----------
+function favicon() {
+  write('favicon.svg', `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><rect width="200" height="200" rx="44" fill="#C8102E"/>` +
+    `<g transform="translate(0 10)"><rect x="28" y="58" width="144" height="64" rx="30" fill="#FFF4E6"/><polygon points="46,112 34,150 76,120" fill="#FFF4E6"/>` +
+    `<rect x="92" y="14" width="16" height="152" rx="8" fill="#FFF4E6"/><rect x="92" y="58" width="16" height="64" fill="#C8102E"/></g></svg>\n`);
+}
+
 // ---------- 검색 색인 ----------
 function searchIndex() {
   const idx = posts.map((p) => ({
@@ -501,6 +604,7 @@ function sitemap() {
     { loc: base, lastmod: today },
     { loc: base + 'archive.html', lastmod: today },
     { loc: base + 'about.html', lastmod: today },
+    { loc: base + 'brand.html', lastmod: today },
     ...posts.map((p) => ({ loc: `${base}posts/${p.slug}.html`, lastmod: p.date || today })),
   ];
   write('sitemap.xml', `<?xml version="1.0" encoding="UTF-8"?>
@@ -523,6 +627,8 @@ copyDir(P.imagesDir, path.join(OUT, 'images'));
 home();
 archive();
 about();
+brand();
+favicon();
 posts.forEach(postPage);
 searchIndex();
 sitemap();
