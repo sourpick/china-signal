@@ -496,7 +496,7 @@ function about() {
   const root = '';
   const body = `<main class="wrap">
   <section class="page-title">
-    <h1>ABOUT</h1>
+    <h1>ABOUT 中SIGNAL</h1>
     <p>${esc(site.description)}</p>
   </section>
   <div class="about-body">
