@@ -263,7 +263,7 @@ img { max-width: 100%; display: block; }
 /* ---------- 심볼 (말하는 中) ---------- */
 .symbol { display: block; }
 .logo__mark .symbol { width: 18px; height: auto; }
-.masthead h1 .masthead__symbol { width: .95em; height: auto; flex: none; margin-bottom: .02em; }
+.masthead h1 .masthead__symbol { width: .66em; height: auto; flex: none; align-self: center; }
 
 /* ---------- 브랜드 스토리 ---------- */
 .brand-hero { border-top: 2px solid var(--ink); padding-top: 28px; display: flex; flex-wrap: wrap; gap: 32px; align-items: stretch; }
