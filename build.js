@@ -164,20 +164,36 @@ const nextMonth = (id) => {
   return `${y}.${String(m).padStart(2, '0')}`;
 };
 
-// ---------- 심볼: 말하는 中 ----------
-// 가로로 누운 둥근 네모(口) + 말꼬리 = 말풍선, 세로획(丨)이 관통하면 中.
-// color: 심볼 색, knock: 말풍선 안쪽 세로획 색(보통 배경색)
+// ---------- 심볼: 리본 말풍선 中 ----------
+// 한 장의 리본이 접혀 말풍선(口)이 되고, 세로획(丨)이 그 위를 지나가며 中이 됩니다.
+// color: 리본 색, shade: 접힌 부분 그림자 색 (지정하지 않으면 리본 색에 맞춰 자동)
+const RIBBON_RING = 'M432 402 H818 A130 130 0 0 1 948 532 V655 A130 130 0 0 1 818 785 H458 L310 890 L352 772 A130 130 0 0 1 302 655 V532 A130 130 0 0 1 432 402 Z ' +
+  'M443 507 A45 45 0 0 0 398 552 V718 Q430 680 488 680 H808 A45 45 0 0 0 853 635 V552 A45 45 0 0 0 808 507 Z';
+const RIBBON_SHADE = { '#FFF4E6': ['#E39A8C', 1], '#C8102E': ['#5E0412', 0.8], '#F3F2EF': ['#9A8F86', 0.8] };
 let symbolId = 0;
-function symbol({ color = '#C8102E', knock = '#F3F2EF', label = '', cls = '' } = {}) {
+function symbol({ color = '#C8102E', shade, label = '', cls = '' } = {}) {
   const id = 'sym' + (++symbolId);
+  const [sc, k] = shade ? [shade, 1] : (RIBBON_SHADE[color] || ['#000000', 0.25]);
   const a11y = label ? `role="img" aria-label="${esc(label)}"` : 'aria-hidden="true"';
-  return `<svg class="symbol ${cls}" viewBox="0 0 200 180" ${a11y}><defs><clipPath id="${id}"><rect x="28" y="58" width="144" height="64" rx="30"/></clipPath></defs>` +
-    `<rect x="28" y="58" width="144" height="64" rx="30" fill="${color}"/>` +
-    `<polygon points="46,112 34,150 76,120" fill="${color}"/>` +
-    `<rect x="92" y="14" width="16" height="152" rx="8" fill="${color}"/>` +
-    `<rect x="92" y="14" width="16" height="152" fill="${knock}" clip-path="url(#${id})"/></svg>`;
+  const lg = (g, x1, y1, x2, y2, stops) =>
+    `<linearGradient id="${id}${g}" gradientUnits="userSpaceOnUse" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}">` +
+    stops.map(([o, a]) => `<stop offset="${o}" stop-color="${sc}" stop-opacity="${(a * k).toFixed(2)}"/>`).join('') + '</linearGradient>';
+  return `<svg class="symbol ${cls}" viewBox="280 200 700 780" ${a11y}><defs>` +
+    lg('t', 380, 0, 860, 0, [[0, 0], [0.4, 0.7], [0.62, 0.6], [1, 0]]) +
+    lg('b', 430, 0, 860, 0, [[0, 0], [0.32, 0.55], [0.55, 0.5], [0.78, 0.45], [1, 0]]) +
+    lg('l', 395, 520, 330, 690, [[0, 0.7], [0.45, 0.25], [1, 0]]) +
+    lg('r', 860, 660, 935, 520, [[0, 0.65], [0.5, 0.25], [1, 0]]) +
+    lg('p', 0, 500, 0, 660, [[0, 0.1], [0.35, 0.45], [1, 0]]) +
+    `<clipPath id="${id}c"><path d="${RIBBON_RING}" clip-rule="evenodd"/></clipPath></defs>` +
+    `<path d="${RIBBON_RING}" fill="${color}" fill-rule="evenodd"/>` +
+    `<g clip-path="url(#${id}c)"><rect x="300" y="400" width="650" height="108" fill="url(#${id}t)"/>` +
+    `<rect x="300" y="679" width="650" height="110" fill="url(#${id}b)"/>` +
+    `<rect x="300" y="505" width="100" height="215" fill="url(#${id}l)"/>` +
+    `<rect x="852" y="505" width="98" height="180" fill="url(#${id}r)"/></g>` +
+    `<rect x="577" y="222" width="97" height="740" rx="48.5" fill="${color}"/>` +
+    `<rect x="577" y="500" width="97" height="160" fill="url(#${id}p)"/></svg>`;
 }
-const LOGO_MARK = () => `<span class="logo__mark">${symbol({ color: '#FFF4E6', knock: '#C8102E' })}</span>`;
+const LOGO_MARK = () => `<span class="logo__mark">${symbol({ color: '#FFF4E6' })}</span>`;
 
 // ---------- 공통 조각 ----------
 const ICON_ARROW = '<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
@@ -325,7 +341,7 @@ function home() {
 
   const body = `<main class="wrap">
   <section class="masthead">
-    <h1>${symbol({ color: '#C8102E', knock: '#F3F2EF', label: '中', cls: 'masthead__symbol' })}SIGNAL</h1>
+    <h1>${symbol({ color: '#C8102E', label: '中', cls: 'masthead__symbol' })}SIGNAL</h1>
     <div class="masthead__intro">
       <p class="eyebrow">${esc(site.tagline)}</p>
       <p>${esc(site.description)}</p>
@@ -517,7 +533,7 @@ function brand() {
   ];
   const body = `<main class="wrap">
   <section class="brand-hero">
-    <div class="brand-hero__mark">${symbol({ color: '#FFF4E6', knock: '#C8102E', label: '中SIGNAL 심볼, 말하는 中' })}</div>
+    <div class="brand-hero__mark">${symbol({ color: '#FFF4E6', label: '中SIGNAL 심볼, 리본 말풍선 中' })}</div>
     <div class="brand-hero__text">
       <p class="eyebrow">BRAND STORY</p>
       <h1><span class="han">中</span>SIGNAL</h1>
@@ -542,13 +558,13 @@ function brand() {
   <section class="brand-sec">
     <div class="brand-sec__head"><span class="num">02</span><h2>	심볼 · 목소리와 신호가 만나는 中</h2></div>
     <div class="formula" aria-label="말풍선과 세로획이 만나 中이 되는 과정">
-      <div class="formula__item"><svg viewBox="0 0 200 180" aria-hidden="true"><rect x="28" y="58" width="144" height="64" rx="30" fill="#141414"/><polygon points="46,112 34,150 76,120" fill="#141414"/></svg><span>말풍선 · 口</span><small>중국 소비자의 목소리</small></div>
+      <div class="formula__item"><svg viewBox="280 200 700 780" aria-hidden="true"><path d="${RIBBON_RING}" fill="#141414" fill-rule="evenodd"/></svg><span>말풍선 · 口</span><small>중국 소비자의 목소리</small></div>
       <span class="formula__op">+</span>
-      <div class="formula__item"><svg viewBox="0 0 200 180" aria-hidden="true"><rect x="92" y="14" width="16" height="152" rx="8" fill="#141414"/></svg><span>세로획 · 丨</span><small>그 목소리를 꿰뚫는 신호</small></div>
+      <div class="formula__item"><svg viewBox="280 200 700 780" aria-hidden="true"><rect x="577" y="222" width="97" height="740" rx="48.5" fill="#141414"/></svg><span>세로획 · 丨</span><small>그 목소리를 꿰뚫는 신호</small></div>
       <span class="formula__op">=</span>
-      <div class="formula__item formula__item--result">${symbol({ color: '#C8102E', knock: '#FFFFFF' })}<span>中</span><small>중국 시장의 목소리가 신호가 되는 순간</small></div>
+      <div class="formula__item formula__item--result">${symbol({ color: '#C8102E' })}<span>中</span><small>중국 시장의 목소리가 신호가 되는 순간</small></div>
     </div>
-    <p class="brand-text">가로로 누운 둥근 네모에 말꼬리를 달아 말풍선을 만들고, 세로획이 그 말풍선을 위아래로 꿰뚫게 했어요. 그러면 中이 됩니다. 중국 시장이 하는 말을 가장 먼저 듣고, 그 안에서 신호를 찾아낸다는 뜻이에요. 한 가지 색으로도 완성되는 형태라 프로필, 도장, 스티커 어디에 써도 또렷해요.</p>
+    <p class="brand-text">한 장의 리본이 부드럽게 접혀 말풍선(口)이 되고, 세로획(丨)이 그 위를 곧게 지나가며 中이 완성돼요. 리본은 끊기지 않고 이어지는 대화를, 세로획은 그 대화를 꿰뚫는 신호를 뜻해요. 중국 시장이 하는 말을 가장 먼저 듣고, 그 안에서 핵심을 찾아낸다는 의미를 담았습니다.</p>
   </section>
 
   <section class="brand-sec">
@@ -564,9 +580,9 @@ function brand() {
   <section class="brand-sec">
     <div class="brand-sec__head"><span class="num">04</span><h2>로고 사용</h2></div>
     <div class="usage-grid">
-      <div class="usage" style="background:#C8102E;color:#FFF4E6">${symbol({ color: '#FFF4E6', knock: '#C8102E' })}<span class="usage__word"><span class="han">中</span>SIGNAL</span><small>기본 · 빨강 바탕</small></div>
-      <div class="usage" style="background:#FFFFFF">${symbol({ color: '#C8102E', knock: '#FFFFFF' })}<span class="usage__word"><span class="han" style="color:#C8102E">中</span>SIGNAL</span><small>밝은 바탕</small></div>
-      <div class="usage" style="background:#141414;color:#F3F2EF">${symbol({ color: '#F3F2EF', knock: '#141414' })}<span class="usage__word"><span class="han" style="color:#FF5A6A">中</span>SIGNAL</span><small>어두운 바탕</small></div>
+      <div class="usage" style="background:#C8102E;color:#FFF4E6">${symbol({ color: '#FFF4E6' })}<span class="usage__word"><span class="han">中</span>SIGNAL</span><small>기본 · 빨강 바탕</small></div>
+      <div class="usage" style="background:#FFFFFF">${symbol({ color: '#C8102E' })}<span class="usage__word"><span class="han" style="color:#C8102E">中</span>SIGNAL</span><small>밝은 바탕</small></div>
+      <div class="usage" style="background:#141414;color:#F3F2EF">${symbol({ color: '#F3F2EF' })}<span class="usage__word"><span class="han" style="color:#FF5A6A">中</span>SIGNAL</span><small>어두운 바탕</small></div>
     </div>
   </section>
 
@@ -581,9 +597,8 @@ function brand() {
 
 // ---------- 파비콘 ----------
 function favicon() {
-  write('favicon.svg', `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><rect width="200" height="200" rx="44" fill="#C8102E"/>` +
-    `<g transform="translate(0 10)"><rect x="28" y="58" width="144" height="64" rx="30" fill="#FFF4E6"/><polygon points="46,112 34,150 76,120" fill="#FFF4E6"/>` +
-    `<rect x="92" y="14" width="16" height="152" rx="8" fill="#FFF4E6"/><rect x="92" y="58" width="16" height="64" fill="#C8102E"/></g></svg>\n`);
+  const mark = symbol({ color: '#FFF4E6' }).replace(/class="symbol [^"]*" /, '').replace('aria-hidden="true"', 'x="22" y="22" width="156" height="156"');
+  write('favicon.svg', `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><rect width="200" height="200" rx="44" fill="#C8102E"/>${mark}</svg>\n`);
 }
 
 // ---------- 검색 색인 ----------
