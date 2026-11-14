@@ -505,9 +505,9 @@ ${markdown(fs.readFileSync(P.about, 'utf8'))}
 function brand() {
   const root = '';
   const meanings = [
-    ['zhōng', '중국', '다루는 시장', '중국 소비자와 플랫폼에서 일어나는 변화를 매달 기록해요.'],
-    ['zhōng', '가운데', '서 있는 자리', '한국 본사와 중국 현지 사이, 그 한가운데에서 양쪽의 말을 잇는 사람이에요.'],
-    ['zhòng', '적중하다', '일하는 방식', '中奖(당첨)의 中처럼, 신호를 읽고 과녁을 정확히 맞혀요.'],
+    ['zhōng', '중국', '우리가 바라보는 시장', '중국 소비자와 플랫폼에서 일어나는 변화를 매달 기록해요.'],
+    ['zhōng', '가운데', '	우리가 서 있는 자리', '한국 본사와 중국 현지 사이, 그 한가운데에서 양쪽의 말을 잇는 사람이에요.'],
+    ['zhòng', '적중하다', '우리가 일하는 방식', '中에는 '맞히다', '적중하다'라는 뜻도 있어요. 시장의 변화를 정확히 포착하고 핵심을 짚어낸다는 의미를 담았습니다.'],
   ];
   const colors = [
     ['Signal Red', '#C8102E', '중국 시장이 보내는 신호. 가장 먼저 눈에 띄어야 하는 정보에 써요.', '#FFFFFF'],
@@ -521,13 +521,13 @@ function brand() {
     <div class="brand-hero__text">
       <p class="eyebrow">BRAND STORY</p>
       <h1><span class="han">中</span>SIGNAL</h1>
-      <p class="brand-hero__tag">중국 시장의 신호를<br>한국 브랜드의 언어로.</p>
-      <p class="brand-hero__en">Read China, first.</p>
+      <p class="brand-hero__tag">중국 시장의 신호를 읽고,<br>그 중심에서 변화의 의미를 정확히 짚어냅니다.</p>
+      <p class="brand-hero__en">Read China First.</p>
     </div>
   </section>
 
   <section class="brand-sec">
-    <div class="brand-sec__head"><span class="num">01</span><h2>이름 · 中 한 글자에 담은 세 가지 뜻</h2></div>
+    <div class="brand-sec__head"><span class="num">01</span><h2>이름 · 中 한 글자에 담긴 세 가지 의미</h2></div>
     <div class="meaning-grid">
       ${meanings.map(([py, ko, role, text]) => `<article class="meaning">
         <span class="meaning__han">中</span>
@@ -540,13 +540,13 @@ function brand() {
   </section>
 
   <section class="brand-sec">
-    <div class="brand-sec__head"><span class="num">02</span><h2>심볼 · 말하는 中</h2></div>
+    <div class="brand-sec__head"><span class="num">02</span><h2>	심볼 · 목소리와 신호가 만나는 中</h2></div>
     <div class="formula" aria-label="말풍선과 세로획이 만나 中이 되는 과정">
       <div class="formula__item"><svg viewBox="0 0 200 180" aria-hidden="true"><rect x="28" y="58" width="144" height="64" rx="30" fill="#141414"/><polygon points="46,112 34,150 76,120" fill="#141414"/></svg><span>말풍선 · 口</span><small>중국 소비자의 목소리</small></div>
       <span class="formula__op">+</span>
       <div class="formula__item"><svg viewBox="0 0 200 180" aria-hidden="true"><rect x="92" y="14" width="16" height="152" rx="8" fill="#141414"/></svg><span>세로획 · 丨</span><small>그 목소리를 꿰뚫는 신호</small></div>
       <span class="formula__op">=</span>
-      <div class="formula__item formula__item--result">${symbol({ color: '#C8102E', knock: '#FFFFFF' })}<span>中</span><small>중국이 말을 걸어오는 순간</small></div>
+      <div class="formula__item formula__item--result">${symbol({ color: '#C8102E', knock: '#FFFFFF' })}<span>中</span><small>중국 시장의 목소리가 신호가 되는 순간</small></div>
     </div>
     <p class="brand-text">가로로 누운 둥근 네모에 말꼬리를 달아 말풍선을 만들고, 세로획이 그 말풍선을 위아래로 꿰뚫게 했어요. 그러면 中이 됩니다. 중국 시장이 하는 말을 가장 먼저 듣고, 그 안에서 신호를 찾아낸다는 뜻이에요. 한 가지 색으로도 완성되는 형태라 프로필, 도장, 스티커 어디에 써도 또렷해요.</p>
   </section>
