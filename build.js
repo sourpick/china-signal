@@ -319,7 +319,7 @@ function subscribe() {
   <span class="subscribe__char" aria-hidden="true">信号</span>
   <div>
     <p class="eyebrow">NEWSLETTER</p>
-    <h2>매월 첫째 주, 중국 시장의 주요 트렌드와<br>인사이트를 전해드립니다.</h2>
+    <h2>매월 첫째 주,<br>중국 시장의 주요 트렌드와<br>인사이트를 전해드립니다.</h2>
   </div>
   <form data-subscribe${site.newsletterUrl ? ` data-url="${esc(site.newsletterUrl)}"` : ''}>
     <label class="sr-only" for="email">이메일 주소</label>
