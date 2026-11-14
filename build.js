@@ -7,8 +7,20 @@
 const fs = require('fs');
 const path = require('path');
 
-const SRC = path.join(__dirname, 'src');
 const OUT = path.join(__dirname, 'dist');
+
+// 폴더 구조(src/posts, src/issues …)와, 모든 파일을 한 폴더에 둔 구조 둘 다 지원합니다.
+// GitHub 웹에서 업로드하면 폴더가 사라지는 경우가 있어서입니다.
+const NESTED = fs.existsSync(path.join(__dirname, 'src', 'site.json'));
+const SRC = NESTED ? path.join(__dirname, 'src') : __dirname;
+const NOT_POSTS = ['readme.md', 'about.md'];
+const P = {
+  site: path.join(SRC, 'site.json'),
+  about: path.join(SRC, 'about.md'),
+  postsDir: NESTED ? path.join(SRC, 'posts') : SRC,
+  issuesDir: NESTED ? path.join(SRC, 'issues') : SRC,
+  imagesDir: path.join(SRC, 'images'),
+};
 
 // ---------- 유틸 ----------
 const esc = (s = '') => String(s)
@@ -122,12 +134,12 @@ function markdown(src) {
 }
 
 // ---------- 데이터 읽기 ----------
-const site = readJSON(path.join(SRC, 'site.json'));
+const site = readJSON(P.site);
 const catMap = Object.fromEntries(site.categories.map((c) => [c.id, c]));
 
-const posts = fs.readdirSync(path.join(SRC, 'posts'))
-  .filter((f) => f.endsWith('.md') && !f.startsWith('_'))
-  .map((f) => parsePost(path.join(SRC, 'posts', f)))
+const posts = fs.readdirSync(P.postsDir)
+  .filter((f) => f.endsWith('.md') && !f.startsWith('_') && !NOT_POSTS.includes(f.toLowerCase()))
+  .map((f) => parsePost(path.join(P.postsDir, f)))
   .sort((a, b) => (b.issue + (b.date || '')).localeCompare(a.issue + (a.date || '')));
 
 const bySlug = Object.fromEntries(posts.map((p) => [p.slug, p]));
@@ -135,9 +147,9 @@ for (const p of posts) {
   if (!catMap[p.category]) throw new Error(`없는 카테고리 '${p.category}' (${p.slug}). site.json의 categories를 확인하세요.`);
 }
 
-const issues = fs.readdirSync(path.join(SRC, 'issues'))
-  .filter((f) => f.endsWith('.json'))
-  .map((f) => readJSON(path.join(SRC, 'issues', f)))
+const issues = fs.readdirSync(P.issuesDir)
+  .filter((f) => /^\d{4}-\d{2}\.json$/.test(f))
+  .map((f) => readJSON(path.join(P.issuesDir, f)))
   .sort((a, b) => b.id.localeCompare(a.id));
 const issue = issues[0];
 const pick = (slug) => {
@@ -178,7 +190,7 @@ function layout({ title, description, root, active, body }) {
 <meta property="og:title" content="${esc(pageTitle)}">
 <meta property="og:description" content="${esc(description || site.description)}">
 <meta property="og:type" content="website">
-<link rel="preconnect" href="https://fonts.googleapis.com">
+${site.googleVerification ? `<meta name="google-site-verification" content="${esc(site.googleVerification)}">\n` : ''}${site.naverVerification ? `<meta name="naver-site-verification" content="${esc(site.naverVerification)}">\n` : ''}<link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;800;900&family=Noto+Sans+KR:wght@400;500;700;900&family=Noto+Serif+KR:wght@400;600;700;900&family=Noto+Serif+SC:wght@700;900&display=swap">
 <link rel="stylesheet" href="${root}assets/style.css">
@@ -455,7 +467,7 @@ function about() {
   </section>
   <div class="about-body">
     <article class="prose">
-${markdown(fs.readFileSync(path.join(SRC, 'about.md'), 'utf8'))}
+${markdown(fs.readFileSync(P.about, 'utf8'))}
     </article>
     <aside class="post-side">
       <div class="box">
@@ -480,15 +492,39 @@ function searchIndex() {
   write('assets/search-index.js', `window.SEARCH_INDEX = ${JSON.stringify(idx)};\n`);
 }
 
+// ---------- 사이트맵 (검색엔진 등록용) ----------
+function sitemap() {
+  if (!site.url) return;
+  const base = site.url.endsWith('/') ? site.url : site.url + '/';
+  const today = new Date().toISOString().slice(0, 10);
+  const urls = [
+    { loc: base, lastmod: today },
+    { loc: base + 'archive.html', lastmod: today },
+    { loc: base + 'about.html', lastmod: today },
+    ...posts.map((p) => ({ loc: `${base}posts/${p.slug}.html`, lastmod: p.date || today })),
+  ];
+  write('sitemap.xml', `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${urls.map((u) => `  <url><loc>${esc(u.loc)}</loc><lastmod>${esc(u.lastmod)}</lastmod></url>`).join('\n')}
+</urlset>
+`);
+}
+
 // ---------- 실행 ----------
 fs.rmSync(OUT, { recursive: true, force: true });
 fs.mkdirSync(OUT, { recursive: true });
-copyDir(path.join(SRC, 'assets'), path.join(OUT, 'assets'));
-copyDir(path.join(SRC, 'images'), path.join(OUT, 'images'));
+if (NESTED) {
+  copyDir(path.join(SRC, 'assets'), path.join(OUT, 'assets'));
+} else {
+  fs.mkdirSync(path.join(OUT, 'assets'), { recursive: true });
+  for (const f of ['style.css', 'main.js']) fs.copyFileSync(path.join(SRC, f), path.join(OUT, 'assets', f));
+}
+copyDir(P.imagesDir, path.join(OUT, 'images'));
 home();
 archive();
 about();
 posts.forEach(postPage);
 searchIndex();
+sitemap();
 write('.nojekyll', '');
 console.log(`✓ 빌드 완료: 글 ${posts.length}개, 호 ${issues.length}개 → dist/`);
